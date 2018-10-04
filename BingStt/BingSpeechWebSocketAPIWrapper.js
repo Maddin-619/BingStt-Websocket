@@ -12,7 +12,8 @@ var bingResp = require('./BingResponseMessageParser.js');
 
 var defaultOptions = {
     format:'simple',
-    language:'en-US'
+    language:'en-US',
+    mode:'interactive' // interactive, dictation, conversation
 };
 
 var telemetry = {
@@ -101,7 +102,7 @@ ApiWrapper.prototype.startDetection = function(inputStream){
 ApiWrapper.prototype.open = function() {
     guid = uuid.v4().replace('-','');
     guid = guid.replace(/-/g, '');
-    var url = 'wss://speech.platform.bing.com/speech/recognition/interactive/cognitiveservices/v1?format=' + defaultOptions.format + '&language=' + defaultOptions.language + '&Ocp-Apim-Subscription-Key=' + subscriptionKey + '&X-ConnectionId=' + guid;
+    var url = 'wss://speech.platform.bing.com/speech/recognition/' + defaultOptions.mode + '/cognitiveservices/v1?format=' + defaultOptions.format + '&language=' + defaultOptions.language + '&Ocp-Apim-Subscription-Key=' + subscriptionKey + '&X-ConnectionId=' + guid;
 
     io = new socket(url);
     telemetry.Metrics.push({
