@@ -9,6 +9,7 @@ var io = null;
 var WSHeader = require('./WebSocketHeader.js');
 var wsHeader = new WSHeader();
 var bingResp = require('./BingResponseMessageParser.js');
+var text = new String();
 
 var defaultOptions = {
     format:'simple',
@@ -134,6 +135,9 @@ ApiWrapper.prototype.open = function() {
             case 'speech.phrase':
                 telemetry.ReceivedMessages.speech__phrase.push(new Date().toISOString());
                 var body = JSON.parse(msg.item('body'));
+                if(body.DisplayText != undefined){
+                    text = text + '\n' + body.DisplayText;
+                }
                 self.emit('recognized',{RecognitionStatus:body.RecognitionStatus,DisplayText:body.DisplayText});
             break;
             case 'turn.end':
@@ -144,6 +148,13 @@ ApiWrapper.prototype.open = function() {
                 sendToSocketServer(ackBuffer);
                 InitializeTelemetry();
                 console.log('turn.end');
+                var fs = require('fs');
+                fs.writeFile("text", text, function(err) {
+                    if(err) {
+                        return console.log(err);
+                    }
+                    console.log("The file was saved!");
+                });
             break;
         }
         
